@@ -1,13 +1,11 @@
 from tkinter import Tk
 from tkinter.filedialog import askopenfilename
 import webbrowser
-
+html = ""
 class Alumno:
     def __init__(self, nombre, nota):
         self.nombre = nombre
         self.nota = nota
-
-html = ""
 
 def abrirArchivo():
     Tk().withdraw()
@@ -65,8 +63,45 @@ def burbujaDesc(alumnos):
             if alumnos[j].nota < alumnos[j+1].nota:
                 alumnos[j+1], alumnos[j]= alumnos[j],alumnos[j+1]
 
-def salidaConsola(curso, alumnos, parametros):
+def salidaConsola(curso, alumnos, parametros,html):
     largo = len(alumnos)
+    print('''
+================================================
+> Curso : {0}
+> Total de estudiante: {1}
+
+>Listado desordenado
+'''.format(curso, largo))
+    html+="<br><center><h2>{0}</h2></center><br>".format(curso)
+    html+="""
+    <div class="jumbotron mx-4">
+            <br><center><h3>Listado Desordenado</h3></center><br>
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th scope="col">Nombre</th>
+                        <th scope="col">Nota</th>
+                    </tr>
+                </thead>
+                <tbody>
+    """
+    for k in alumnos:
+        print(">> Nombre:", k.nombre, "\nNota: ", k.nota)
+        if k.nota >= 61:
+            html+='<tr class="table-info">'
+        else:
+            html+='<tr class="table-danger">'
+        html+="""
+                <th scope="row">{0}</th>
+                <td>{1}</td>
+            </tr>
+        """.format(k.nombre,k.nota)
+    print("")
+    html+="""
+                </tbody>
+            </table>
+            </div>
+            """
     aprobados = 0
     reprobados = 0
     sum = 0
@@ -85,40 +120,113 @@ def salidaConsola(curso, alumnos, parametros):
             mini = nota
     promedio = sum/largo
 
-    print('''
-================================================
-> Curso : {0}
-> Total de estudiante: {1}
-'''.format(curso, largo))
     
     for i in parametros:
         if i == "ASC":
             print("> Listado ordenado Ascendete:\n")
+            html+="""
+            <div class="jumbotron mx-4">
+            <br><center><h3>Listado ordenado Ascendete</h3></center><br>
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th scope="col">Nombre</th>
+                        <th scope="col">Nota</th>
+                    </tr>
+                </thead>
+                <tbody>
+            """
             asc = alumnos
             burbujaAsc(asc)
             for j in asc:
                 print(">> Nombre:", j.nombre, "\nNota: ", j.nota)
+                if j.nota >= 61:
+                    html+='<tr class="table-info">'
+                else:
+                    html+='<tr class="table-danger">'
+                html+="""
+                        <th scope="row">{0}</th>
+                        <td>{1}</td>
+                    </tr>
+                """.format(j.nombre,j.nota)
             print("")
+            html+="""
+                </tbody>
+            </table>
+            </div>
+            """
         elif i == "DESC":
             print("> Listado ordenado Descendete:\n")
             desc = alumnos
             burbujaDesc(desc)
+            html+="""
+            <div class="jumbotron mx-4">
+            <br><center><h3>Listado ordenado Ascendete</h3></center><br>
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th scope="col">Nombre</th>
+                        <th scope="col">Nota</th>
+                    </tr>
+                </thead>
+                <tbody>
+            """
             for j in desc:
                 print(">> Nombre:", j.nombre, "\nNota:", j.nota)
+                if j.nota >= 61:
+                    html+='<tr class="table-info">'
+                else:
+                    html+='<tr class="table-danger">'
+                html+="""
+                        <th scope="row">{0}</th>
+                        <td>{1}</td>
+                    </tr>
+                """.format(j.nombre,j.nota)
             print("")
+            html+="""
+                </tbody>
+            </table>
+            </div>
+            """
         elif i == "AVG":
             print("> El promedio de los estudiantes es: {:.2f}\n".format(promedio))
+            html+="""
+            <div class="jumbotron mx-4">
+            <br><center><h3>El promedio de los estudiantes es: {:.2f}</h3></center><br>
+            </div>
+            """.format(promedio)
         elif i == "MIN":
             print("> La nota mínima es de: {0}\n".format(mini))
+            html+="""
+            <div class="jumbotron mx-4">
+            <br><center><h3>La nota mínima es de: {0}</h3></center><br>
+            </div>
+            """.format(mini)
         elif i == "MAX":
             print("> La nota máxima es de: {0}\n".format(maxi))
+            html+="""
+            <div class="jumbotron mx-4">
+            <br><center><h3>La nota máxima es de: {0}</h3></center><br>
+            </div>
+            """.format(maxi)
         elif i == "APR":
             print("> El número de estudiantes aprobados es: {0}\n".format(aprobados))
+            html+="""
+            <div class="jumbotron mx-4">
+            <br><center><h3>El número de estudiantes aprobados es: {0}</h3></center><br>
+            </div>
+            """.format(reprobados)
         elif i == "REP":
             print("> El número de estudiantes reprobados es: {0}\n".format(reprobados))
+            html+="""
+            <div class="jumbotron mx-4">
+            <br><center><h3>El número de estudiantes reprobados es: {0}</h3></center><br>
+            </div>
+            """.format(aprobados)
         else:
             print("Parametros no validos")
     print("================================================")
+    return html
 
 def generarHtml(html):
     pagina = open('Reporte Alumnos.html', 'w')
@@ -137,12 +245,13 @@ def generarHtml(html):
         <a class="navbar-brand" href="#">Walter Daniel Jimenez Hernandez 201901108</a>
     </nav>
     """
+    salida+=html
     salida += """</body>
     </html>
     """
     pagina.write(salida)
     pagina.close()
-    webbrowser.open_new_tab('Ordenamiento y Busqueda.html')
+    webbrowser.open_new_tab('Reporte Alumnos.html')
 
 if __name__ == '__main__':
     opcion = 0
@@ -175,9 +284,9 @@ if __name__ == '__main__':
             alumnos1 = separarAlumnos(separados1)
             alumnosFinal = crearObjetos(alumnos1)
         elif opcion == 2:
-            salidaConsola(curso, alumnosFinal, parametros)
+            html+= salidaConsola(curso, alumnosFinal, parametros, html)
         elif opcion == 3:
-            pass
+            generarHtml(html)
         elif opcion == 4:
             break
         else:
