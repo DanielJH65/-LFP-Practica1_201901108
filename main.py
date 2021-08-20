@@ -72,7 +72,8 @@ def salidaConsola(curso, alumnos, parametros,html):
 
 >Listado desordenado
 '''.format(curso, largo))
-    html+="<br><center><h2>{0}</h2></center><br>".format(curso)
+    html+="""<br><center><h2>{0}</h2></center><br>
+    <center><h2>Número de estudiantes: {1}</h2></center><br>""".format(curso, largo)
     html+="""
     <div class="jumbotron mx-4">
             <br><center><h3>Listado Desordenado</h3></center><br>
